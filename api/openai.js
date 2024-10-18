@@ -5,8 +5,18 @@ const openai = new OpenAI({
     baseURL: process.env.BASE_URL,
 })
 
-const model = process.env.MODEL||"gpt-4o-mini";
+const model = process.env.MODEL || "gpt-4o-mini";
 module.exports = async function (req, res) {
+    // 允许 CORS 请求
+    res.setHeader('Access-Control-Allow-Origin', '*'); // 允许所有来源（或者根据需要指定来源）
+
+    // 处理 OPTIONS 请求（预检请求）
+    if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        return res.status(204).end(); // 返回 204 状态码表示成功
+    }
+
     try {
         const {prompt} = req.body;
 
