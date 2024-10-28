@@ -10,6 +10,7 @@ module.exports = async function (req, res) {
     // 允许 CORS 请求
     res.setHeader('Access-Control-Allow-Origin', '*'); // 允许所有来源（或者根据需要指定来源）
 
+    console.log(req, res, '请求数据')
     // 处理 OPTIONS 请求（预检请求）
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
