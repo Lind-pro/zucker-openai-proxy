@@ -10,7 +10,7 @@ module.exports = async function (req, res) {
     // 允许 CORS 请求
     res.setHeader('Access-Control-Allow-Origin', '*'); // 允许所有来源（或者根据需要指定来源）
 
-    console.log(req, res, '请求数据')
+    console.info(req, res, '请求数据')
     // 处理 OPTIONS 请求（预检请求）
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
@@ -32,9 +32,11 @@ module.exports = async function (req, res) {
             response: completion.choices[0].message.content,
         });
     } catch (error) {
+        console.error("Error with OpenAI API:", error); // Log the error for debugging
+
         res.status(500).json({
             success: false,
-            message: JSON.stringify(error) + "\n" + JSON.stringify(req),
+            message: "Error with OpenAI API",
             error: error.message,
         });
     }
