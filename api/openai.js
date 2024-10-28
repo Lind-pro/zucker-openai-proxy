@@ -1,29 +1,33 @@
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,  // 使用 Vercel 环境变量
-    baseURL: process.env.BASE_URL,
-})
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.BASE_URL || "https://api.openai.com/v1",
+});
 
-const model = process.env.MODEL || "gpt-4o-mini";
+const model = process.env.MODEL || "gpt-4";
+
 module.exports = async function (req, res) {
     // 允许 CORS 请求
-    res.setHeader('Access-Control-Allow-Origin', '*'); // 允许所有来源（或者根据需要指定来源）
-
-    console.info(req, res, '请求数据')
-    // 处理 OPTIONS 请求（预检请求）
+    res.setHeader('Access-Control-Allow-Origin', '*');
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        return res.status(204).end(); // 返回 204 状态码表示成功
+        return res.status(204).end();
     }
 
     try {
-        const {prompt} = req.body;
+        const { prompt } = req.body;
 
-        // 调用 OpenAI 的 ChatGPT API
+        if (!Array.isArray(prompt) || !prompt.every(msg => msg.role && msg.content)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid prompt format. Should be an array of message objects with `role` and `content`.",
+            });
+        }
+
         const completion = await openai.chat.completions.create({
-            model: model,  // 可以根据需要使用 GPT-4 或其他模型
+            model: model,
             messages: prompt,
         });
 
@@ -32,8 +36,7 @@ module.exports = async function (req, res) {
             response: completion.choices[0].message.content,
         });
     } catch (error) {
-        console.error("Error with OpenAI API:", error); // Log the error for debugging
-
+        console.error("Error with OpenAI API:", error);
         res.status(500).json({
             success: false,
             message: "Error with OpenAI API",
