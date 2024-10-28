@@ -2,10 +2,10 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    baseURL: process.env.BASE_URL || "https://api.openai.com/v1",
+    baseURL: process.env.BASE_URL || "https://api.gptsapi.net/v1",
 });
 
-const model = process.env.MODEL || "gpt-4";
+const model = process.env.MODEL || "gpt-4o-mini";
 
 module.exports = async function (req, res) {
     // 允许 CORS 请求
@@ -17,7 +17,7 @@ module.exports = async function (req, res) {
     }
 
     try {
-        const { prompt } = req.body;
+        const {prompt} = req.body;
 
         if (!Array.isArray(prompt) || !prompt.every(msg => msg.role && msg.content)) {
             return res.status(400).json({
